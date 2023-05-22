@@ -12,16 +12,22 @@ Grinder *grinder;
 Dosage *dosage;
 
 // State Machine
-enum States {NORMAL, GRINDING};
+enum States
+{
+  NORMAL,
+  GRINDING
+};
 uint8_t state = NORMAL;
 
 AsyncWebServer server(80);
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
 
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
     delay(1000);
     Serial.println("Connecting to WiFi...");
   }
@@ -39,32 +45,33 @@ void setup() {
   server.begin();
 }
 
+void loop()
+{
 
-void loop() {
-  
-  switch(state)
+  switch (state)
   {
-    case NORMAL:
-      // start grinding
-      if (grinder->startBtnPressed()) {
-        Serial.println("btn pressed");
-        state = GRINDING;
-        break;
-      }
+  case NORMAL:
+    // start grinding
+    if (grinder->startBtnPressed())
+    {
+      Serial.println("btn pressed");
+      state = GRINDING;
       break;
+    }
+    break;
 
-    case GRINDING:
+  case GRINDING:
     Serial.println("Grinding");
-      grinder->on(dosage->singleDoseSelected ? dosage->singleDoseTime : dosage->doubleDoseTime);
-      while (millis() < grinder->getTargetTime()) {
-        //grinder->getTargetTime() - millis();
-      }
-      grinder->off();
+    grinder->on(dosage->singleDoseSelected ? dosage->singleDoseTime : dosage->doubleDoseTime);
+    while (millis() < grinder->getTargetTime())
+    {
+      // grinder->getTargetTime() - millis();
+    }
+    grinder->off();
 
-      delay(500); // show 0.0 on display for a longer time
+    delay(500); // show 0.0 on display for a longer time
 
-      state = NORMAL;
-      break;
+    state = NORMAL;
+    break;
   }
-  
 }
