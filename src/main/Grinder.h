@@ -9,10 +9,6 @@ class Grinder
     public:
         Grinder();
         bool startBtnPressed();
-        int getSingleDoseStats();
-        int getDoubleDoseStats();
-        void increaseShotCounter(bool isSingleDose);
-        void resetStats();
         unsigned long getTargetTime();
         void on(double targetTime);
         void off();
