@@ -1,5 +1,6 @@
 #include "Grinder.h"
 #include "Dosage.h"
+#include "Secrets.h"
 
 #define BLYNK_PRINT Serial
 
@@ -11,8 +12,8 @@
 #include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
 
-char ssid[] = "AlexanderMegos";
-char pass[] = "@Sean19Bailey96!"; 
+char ssid[] = SSID;
+char pass[] = PASSWORD;
 
 Grinder *grinder;
 Dosage *dosage;
