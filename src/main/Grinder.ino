@@ -3,8 +3,9 @@
 #include <EEPROM.h>
 
 Grinder::Grinder() {
-    pinMode(SSR, OUTPUT);
+    pinMode(GPIO_GRINDER, OUTPUT);
     pinMode(START_BTN, INPUT_PULLUP);
+    digitalWrite(GPIO_GRINDER, LOW);
 }
 
 bool Grinder::startBtnPressed() {
@@ -18,10 +19,10 @@ unsigned long Grinder::getTargetTime() {
 void Grinder::on(double targetTime) {
     this->targetTime = millis() + targetTime * 1000;
     Serial.println("Grinder on");
-    digitalWrite(SSR, HIGH);
+    digitalWrite(GPIO_GRINDER, HIGH);
 }
 
 void Grinder::off() {
     Serial.println("Grinder off");
-    digitalWrite(SSR, LOW);
+    digitalWrite(GPIO_GRINDER, LOW);
 }

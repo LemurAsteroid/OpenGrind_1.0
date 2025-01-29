@@ -1,15 +1,23 @@
-#include <WiFi.h>
-#include <ESPAsyncWebSrv.h>
-
 #include "Grinder.h"
 #include "Dosage.h"
-#include "WebServer.h"
 
-const char* ssid = "AlexanderMegos";
-const char* password = "@Sean19Bailey96!";
+#define BLYNK_PRINT Serial
+
+#define BLYNK_TEMPLATE_ID "TMPL48qFJy-9a"
+#define BLYNK_TEMPLATE_NAME "CoffeeGrinder"
+#define BLYNK_AUTH_TOKEN "UZB3UdBYLpotbObpxFQl8RSkKi6xoOeq"
+
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <BlynkSimpleEsp32.h>
+
+char ssid[] = "AlexanderMegos";
+char pass[] = "@Sean19Bailey96!"; 
 
 Grinder *grinder;
 Dosage *dosage;
+
+BlynkTimer timer;
 
 // State Machine
 enum States
@@ -19,35 +27,21 @@ enum States
 };
 uint8_t state = NORMAL;
 
-AsyncWebServer server(80);
-
 void setup()
 {
   Serial.begin(115200);
 
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(1000);
-    Serial.println("Connecting to WiFi...");
-  }
-
-  Serial.println("WiFi connected");
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP());
-
-  server.on("/", HTTP_GET, handleRootPage);
-  server.on("/submit", HTTP_GET, handleSubmit);
-
   dosage = new Dosage();
   grinder = new Grinder();
 
-  server.begin();
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+  Blynk.virtualWrite(V0, dosage->singleDoseTime);
+  Blynk.virtualWrite(V1, dosage->doubleDoseTime);
+
+  timer.setInterval(5L, mainLoop);
 }
 
-void loop()
-{
-
+void mainLoop(){
   switch (state)
   {
   case NORMAL:
@@ -69,9 +63,23 @@ void loop()
     }
     grinder->off();
 
-    delay(500); // show 0.0 on display for a longer time
-
     state = NORMAL;
     break;
   }
+}
+
+void loop()
+{
+  Blynk.run();
+  timer.run();
+}
+
+BLYNK_WRITE(V0)
+{
+  dosage->singleDoseTime = param.asDouble();
+}
+
+BLYNK_WRITE(V1)
+{
+  dosage->doubleDoseTime = param.asDouble();
 }
